@@ -275,7 +275,7 @@ void assemble(FILE *in, FILE *out) {
             opcode = 4;
             rt = parse_reg(strtok(NULL, " \t,()"));
             imm = resolve_operand(strtok(NULL, " \t,()"), pc, 0);
-            instr = (opcode << 26) | (rt << 21) | (0 << 16) | (imm & 0xFFFF);
+            instr = (opcode << 26) | (0 << 21) | (rt << 16) | (imm & 0xFFFF);
         }
         else if (strcmp(mnemonic, "LW") == 0 || strcmp(mnemonic, "SW") == 0) {
             rt = parse_reg(strtok(NULL, " \t,()"));

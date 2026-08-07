@@ -41,8 +41,8 @@ All instructions:
   - LUI Rt, Imm; Rt = Imm
 
 - I-Type memory:
-  - LW Rt, Offset(Rs)
-  - SW Rt, Offset(Rs)
+  - LW Rd, Offset(Rs)
+  - SW Rd, Offset(Rs)
 
 - I-Type control flow:
   - BEQ Rs, Rt, Offset; if Rs==Rt, PC = PC + 4 + SignExtend(Ofser)
