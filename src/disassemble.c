@@ -26,7 +26,8 @@ void disassemble(uint32_t inst) {
                 case 5: printf("SLL X%u, X%u, X%u\n", rd, rs, rt); break; 
                 case 6: printf("SRL X%u, X%u, X%u\n", rd, rs, rt); break; 
                 case 7: printf("SRA X%u, X%u, X%u\n", rd, rs, rt); break; 
-                case 8: printf("SLT X%u, X%u, X%u\n", rd, rs, rt); break; 
+                case 8: printf("SLT X%u, X%u, X%u\n", rd, rs, rt); break;
+                case 9: printf("MUL X%u, X%u, X%u\n", rd, rs, rt); break;
                 default: printf("UNKNOWN R-TYPE (Funct: %u)\n", funct); break;
             }
             break;

@@ -110,29 +110,8 @@ void preprocess(FILE *in, FILE *out) {
         
         for (int i = 0; mnemonic[i]; i++) mnemonic[i] = toupper(mnemonic[i]);
 
-        if (strcmp(mnemonic, "MUL") == 0) {
-            char *rd = trim(strtok(NULL, ","));
-            char *rs = trim(strtok(NULL, ","));
-            char *rt = trim(strtok(NULL, ", \t\r\n"));
-            macro_counter++;
 
-            fprintf(out, "    ; --- BEGIN MACRO: MUL %s, %s, %s ---\n", rd, rs, rt);
-            fprintf(out, "    ADDI %s, X0, 0\n", rd);               
-            fprintf(out, "    ADD X29, X0, %s\n", rs);              
-            fprintf(out, "    ADD X30, X0, %s\n", rt);              
-            fprintf(out, "__MACRO_MUL_LOOP_%d:\n", macro_counter);
-            fprintf(out, "    BEQ X30, X0, __MACRO_MUL_END_%d\n", macro_counter); 
-            fprintf(out, "    ANDI X28, X30, 1\n");                 
-            fprintf(out, "    BEQ X28, X0, __MACRO_MUL_SKIP_%d\n", macro_counter);
-            fprintf(out, "    ADD %s, %s, X29\n", rd, rd);          
-            fprintf(out, "__MACRO_MUL_SKIP_%d:\n", macro_counter);
-            fprintf(out, "    ADDI X28, X0, 1\n");                  
-            fprintf(out, "    SLL X29, X29, X28\n");                
-            fprintf(out, "    SRL X30, X30, X28\n");                
-            fprintf(out, "    J __MACRO_MUL_LOOP_%d\n", macro_counter);
-            fprintf(out, "__MACRO_MUL_END_%d:\n", macro_counter);
-        } 
-        else if (strcmp(mnemonic, "DIV") == 0) {
+        if (strcmp(mnemonic, "DIV") == 0) {
             char *rd = trim(strtok(NULL, ","));
             char *rs = trim(strtok(NULL, ","));
             char *rt = trim(strtok(NULL, ", \t\r\n"));
@@ -203,10 +182,8 @@ void assemble(FILE *in, FILE *out) {
     // --- PASS 2 ---
     fseek(in, 0, SEEK_SET);
     pc = 0;
-    int line_num = 0;
 
     while (fgets(line, sizeof(line), in)) {
-        line_num++;
         line[strcspn(line, "\r\n")] = 0;
         char *comment = strpbrk(line, ";#");
         if (comment) *comment = '\0';
@@ -243,7 +220,7 @@ void assemble(FILE *in, FILE *out) {
             strcmp(mnemonic, "AND") == 0 || strcmp(mnemonic, "OR") == 0 ||
             strcmp(mnemonic, "XOR") == 0 || strcmp(mnemonic, "SLL") == 0 ||
             strcmp(mnemonic, "SRL") == 0 || strcmp(mnemonic, "SRA") == 0 ||
-            strcmp(mnemonic, "SLT") == 0) {
+            strcmp(mnemonic, "SLT") == 0 || strcmp(mnemonic, "MUL") == 0) {
             
             opcode = 0;
             rd = parse_reg(strtok(NULL, " \t,()"));
@@ -259,7 +236,8 @@ void assemble(FILE *in, FILE *out) {
             else if (strcmp(mnemonic, "SRL") == 0) funct = 6;
             else if (strcmp(mnemonic, "SRA") == 0) funct = 7;
             else if (strcmp(mnemonic, "SLT") == 0) funct = 8;
-
+            else if (strcmp(mnemonic, "MUL") == 0) funct = 9;
+            
             instr = (opcode << 26) | (rs << 21) | (rt << 16) | (rd << 11) | (funct & 0x7FF);
         }
         else if (strcmp(mnemonic, "ADDI") == 0 || strcmp(mnemonic, "ANDI") == 0 || strcmp(mnemonic, "ORI") == 0) {

@@ -33,6 +33,7 @@ All instructions:
   - SRL Rd, Rs, Rt; Rd = Rs >> Rt
   - SRA Rd, Rs, Rt; Rd = Rs >> Rt (sign extended)
   - SLT Rd, Rs, Rt; Rd = (Rs < Rt) ? 1 : 0
+  - MUL Rd, Rs, Rt; Rd = Rs * Rt
 
 - I-Type:
   - ADDI Rt, Rs, Imm; Rt = Rs + SignExtend(Imm)
@@ -125,6 +126,13 @@ Opcodes:
     | Rt      | 5    | Reg Code |
     | Rd      | 5    | Reg Code |
     | Func    | 11   | 8        |
+  MUL:
+    | Section | Bits | Value    |
+    | Opcode  | 6    | 0        |
+    | Rs      | 5    | Reg Code |
+    | Rt      | 5    | Reg Code |
+    | Rd      | 5    | Reg Code |
+    | Func    | 11   | 9        |
   ADDI:
     | Section | Bits | Value    |
     | Opcode  | 6    | 1        |
