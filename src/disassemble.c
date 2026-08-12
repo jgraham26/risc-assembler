@@ -45,7 +45,7 @@ void disassemble(uint32_t inst) {
             break;
         case 4: // LUI [cite: 86]
             // Target register is held in the 'Rs' bits (25-21) according to the table [cite: 87]
-            printf("LUI X%u, 0x%04X\n", rs, imm); 
+            printf("LUI X%u, 0x%04X\n", rt, imm); 
             break;
             
         // Memory Instructions

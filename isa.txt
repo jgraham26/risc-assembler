@@ -194,3 +194,8 @@ Opcodes:
     | Opcode  | 6    | 11       |
     | Reg     | 5    | Reg Code |
     | Rsvd    | 21   | 0        |
+
+
+MMIO:
+  - Any writes to addresses >= 0xC0000000 are passed to MMIO. For now, all mmio writes are to a simulated TTY.
+  - TODO: Add more mmio, such as UART
