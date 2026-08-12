@@ -1,7 +1,7 @@
 RISC Assembler & Disassembler
 =================================
 
-Small assembler and disassembler toolset for a teaching RISC-like ISA.
+Small assembler and disassembler toolset for a MIPS-like ISA.
 
 Features
 - Preprocessor with simple macros (e.g. `DIV` macro expansion)
