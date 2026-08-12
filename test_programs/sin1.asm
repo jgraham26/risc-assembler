@@ -39,19 +39,19 @@ taylor_loop:
     ; 1. Compute term multiplier M = (n + 1) * (n + 2)
     addi x10, x20, 1      ; x10 = n + 1
     addi x11, x20, 2      ; x11 = n + 2
-    jal mul               ; x12 = (n + 1) * (n + 2) = M
+    mul x12, x10, x11     ; x12 = (n + 1) * (n + 2) = M
     addi x23, x12, 0      ; Save M in x23
 
     ; 2. Update Denominator: D = D * M
     addi x10, x2, 0       ; x10 = D
     addi x11, x23, 0      ; x11 = M
-    jal mul               ; x12 = D * M
+    mul x12, x10, x11     ; x12 = D * M
     addi x2, x12, 0       ; x2 = D_new
 
     ; 3. Update Numerator: N = N * M + sign
     addi x10, x1, 0       ; x10 = N
     addi x11, x23, 0      ; x11 = M
-    jal mul               ; x12 = N * M
+    mul x12, x10, x11     ; x12 = N * M
     add x1, x12, x21      ; x1 = N_new = (N * M) + sign
 
     ; 4. Toggle sign for next term ( -1 -> +1 -> -1 ... )
@@ -67,6 +67,7 @@ taylor_done:
 
 
 ; returns in x12 = x10 * x11
+; unused since hardware multiply is implemented, but this is a software implementation of multiply for testing purposes
 mul:
     addi x29, x29, -4 ; allocate stack space for return address
     sw x31, 0(x29) ; save return address on stack
@@ -75,7 +76,6 @@ mul:
 
 mul_loop:
     beq x11, x0, mul_loop_done ; if multiplier is 0, exit loop
-    ; check if number is even or odd
     andi x13, x11, 1 ; check if multiplier is odd
     beq x13, x0, mul_shift
     add x12, x12, x10 ; x12 += x10
@@ -92,7 +92,6 @@ mul_loop_done:
     jr x31 ; return to caller
 
 
-; returns in x12 = x10 / x11, x13 = x10 % x11
 div:
     addi x29, x29, -4      ; Allocate stack space
     sw x31, 0(x29)         ; Save return address
@@ -103,35 +102,28 @@ div:
     beq x11, x0, div_done  ; If divisor is 0, exit
     beq x10, x0, div_done  ; If dividend is 0, exit
 
-    ; x14 acts as our moving bitmask. Start at bit 31 (0x80000000)
     addi x14, x0, 1
     addi x17, x0, 31
     sll x14, x14, x17      ; x14 = 1 << 31
     addi x17, x0, 1        ; initialize shift amount for *2 and /2 operations
 
 div_loop:
-    ; 1. Shift remainder left by 1
     sll x13, x13, x17       ; remainder <<= 1
 
-    ; 2. Isolate the current dividend bit using our mask
     and x16, x10, x14      ; x16 = dividend & mask
     beq x16, x0, skip_or   ; If the bit is 0, skip adding 1 to remainder
     addi x13, x13, 1       ; remainder |= 1
 skip_or:
 
-    ; 3. Core Condition: if (remainder >= divisor)
     slt x15, x13, x11      ; x15 = 1 if remainder < divisor
     bne x15, x0, div_loop_inc ; If true, skip subtraction and quotient update
 
-    ; 4. Update Remainder and Quotient
     sub x13, x13, x11      ; remainder -= divisor
     or x12, x12, x14       ; quotient |= current bitmask
 
 div_loop_inc:
-    ; 5. Shift our loop mask right to target the next bit down
     srl x14, x14, x17       ; mask >>= 1
     
-    ; 6. Exit Condition: If mask hits 0, we finished all 32 bits
     beq x14, x0, div_done  ; If mask == 0, exit loop
     beq x0, x0, div_loop   ; Otherwise, loop back unconditionally
 
